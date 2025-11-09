@@ -1,41 +1,25 @@
 # ----------------------------------------------------------------------
-# STAGE 1: Build - Compiles the application using a full JDK/Maven image
+# STAGE 1: Build (Maven and JDK)
 # ----------------------------------------------------------------------
-# Use a Maven image with Java 21 JDK for building
-FROM openjdk:21-jre-slim
+# FIX: Use a verified Maven tag with the JDK 21
+FROM maven:3-jdk-21 AS build 
 
-# Set the working directory inside the container
 WORKDIR /app
-
-# Copy the Maven project file first to leverage Docker's layer caching 
-# (The dependencies layer won't rebuild if pom.xml hasn't changed)
 COPY pom.xml .
-
-# Download project dependencies
 RUN mvn dependency:resolve
-
-# Copy the remaining source code
 COPY src ./src
-
-# Build the application, creating the final JAR in the target directory
-# We skip tests here since they should have passed in the Jenkins 'Unit Tests' stage
 RUN mvn package -DskipTests
 
 # ----------------------------------------------------------------------
-# STAGE 2: Run - Creates the final, minimal runtime image
+# STAGE 2: Run (JRE only)
 # ----------------------------------------------------------------------
-# Use a JRE-only image for a smaller and more secure final container
-FROM openjdk:21-jre-slim
+# FIX: Use a reliable, verified JRE 21 tag (e.g., Eclipse Temurin)
+FROM eclipse-temurin:21-jre-alpine
 
-# Set the working directory for the runtime environment
 WORKDIR /app
-
-# Expose the port your application listens on (e.g., 8080 for Spring Boot)
 EXPOSE 8080
 
-# Copy the built JAR from the 'build' stage into the final image
-# The JAR file is copied to the root of the /app directory and renamed to app.jar
+# Copy the built JAR from the 'build' stage
 COPY --from=build /app/target/*.jar app.jar
 
-# Define the command to run the application when the container starts
 ENTRYPOINT ["java", "-jar", "/app/app.jar"]
