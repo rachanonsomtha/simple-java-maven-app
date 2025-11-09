@@ -1,8 +1,9 @@
 # ----------------------------------------------------------------------
 # STAGE 1: Build (Maven and JDK)
 # ----------------------------------------------------------------------
-# FIX: Use a verified Maven tag with the JDK 21
-FROM maven:3-jdk-21 AS build 
+# Using the slim-based tag to improve pull reliability and reduce size,
+# while explicitly keeping Java 21 for the enforcer plugin.
+FROM maven:3.9.6-openjdk-21-slim AS build 
 
 WORKDIR /app
 COPY pom.xml .
@@ -13,13 +14,13 @@ RUN mvn package -DskipTests
 # ----------------------------------------------------------------------
 # STAGE 2: Run (JRE only)
 # ----------------------------------------------------------------------
-# FIX: Use a reliable, verified JRE 21 tag (e.g., Eclipse Temurin)
-FROM eclipse-temurin:21-jre-alpine
+# Use the official, current tag for OpenJDK 21 JRE runtime
+FROM openjdk:21-jre-slim
 
 WORKDIR /app
 EXPOSE 8080
 
-# Copy the built JAR from the 'build' stage
-COPY --from=build /app/target/*.jar app.jar
+# The JAR file name is 'my-app-1.0-SNAPSHOT.jar' based on your pom.xml
+COPY --from=build /app/target/my-app-1.0-SNAPSHOT.jar /app/app.jar
 
 ENTRYPOINT ["java", "-jar", "/app/app.jar"]
