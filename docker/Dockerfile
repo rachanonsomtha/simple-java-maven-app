@@ -3,7 +3,7 @@
 # ----------------------------------------------------------------------
 # Using the slim-based tag to improve pull reliability and reduce size,
 # while explicitly keeping Java 21 for the enforcer plugin.
-FROM --platform=linux/arm64 openjdk:21-jre-slim
+FROM openjdk:21-jdk-slim
 
 WORKDIR /app
 COPY pom.xml .
@@ -15,7 +15,7 @@ RUN mvn package -DskipTests
 # STAGE 2: Run (JRE only)
 # ----------------------------------------------------------------------
 # Use the official, current tag for OpenJDK 21 JRE runtime
-FROM openjdk:21-jre-slim
+FROM openjdk:21-jdk-slim
 
 WORKDIR /app
 EXPOSE 8080
