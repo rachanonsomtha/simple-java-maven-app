@@ -15,7 +15,7 @@ RUN mvn package -DskipTests
 # STAGE 2: Run (JRE only)
 # ----------------------------------------------------------------------
 # Use the official, current tag for OpenJDK 21 JRE runtime
-FROM openjdk:21-jre-slim
+FROM --platform=linux/arm64 openjdk:21-jre-slim
 
 WORKDIR /app
 EXPOSE 8080
