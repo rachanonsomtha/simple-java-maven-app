@@ -3,7 +3,7 @@
 # ----------------------------------------------------------------------
 # Using the slim-based tag to improve pull reliability and reduce size,
 # while explicitly keeping Java 21 for the enforcer plugin.
-FROM maven:3.9.6-openjdk-21-slim AS build 
+FROM --platform=linux/arm64 openjdk:21-jre-slim
 
 WORKDIR /app
 COPY pom.xml .
