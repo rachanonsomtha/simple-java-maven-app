@@ -21,6 +21,6 @@ WORKDIR /app
 EXPOSE 8080
 
 # The JAR file name is 'my-app-1.0-SNAPSHOT.jar' based on your pom.xml
-COPY --from=build /app/target/my-app-1.0-SNAPSHOT.jar /app/app.jar
+COPY --from=**builder** /app/target/my-app-1.0-SNAPSHOT.jar /app/app.jar
 
 ENTRYPOINT ["java", "-jar", "/app/app.jar"]
