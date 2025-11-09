@@ -2,7 +2,7 @@
 # STAGE 1: Build - Compiles the application using a full JDK/Maven image
 # ----------------------------------------------------------------------
 # Use a Maven image with Java 21 JDK for building
-FROM maven:3.9.6-openjdk-21 AS build
+FROM maven:21-jdk AS build
 
 # Set the working directory inside the container
 WORKDIR /app
